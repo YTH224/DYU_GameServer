@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace BattleArenaServer
 {
@@ -48,7 +49,7 @@ namespace BattleArenaServer
         // ═══════════════════════════════════════
         // 서버 시작
         // ═══════════════════════════════════════
-        public void Start()
+        public async Task StartAsync()
         {
             PrintBanner();
 
@@ -78,7 +79,7 @@ namespace BattleArenaServer
             while (true)
             {
                 // ★ 동기 Accept — 접속이 올 때까지 멈춤
-                Socket clientSocket = _listenSocket.Accept();
+                Socket clientSocket = await _listenSocket.AcceptAsync();
 
                 int playerId = Interlocked.Increment(ref _nextPlayerId);
 
@@ -94,7 +95,7 @@ namespace BattleArenaServer
                 //
                 // 결과: 두 번째 손님은 영원히 대기
                 //
-                session.Run();
+                _=session.RunAsync();
 
                 // ↑ 이 줄이 끝나야 아래로 내려옵니다
                 Console.WriteLine($"[세션 종료] ID:{playerId}");
@@ -104,7 +105,7 @@ namespace BattleArenaServer
         // ═══════════════════════════════════════
         // 세션 관리
         // ═══════════════════════════════════════
-        public void RemoveSession(int playerId)
+        public async Task RemoveSessionAsync(int playerId)
         {
             _sessions.TryRemove(playerId, out _);
             Console.WriteLine($"[현재 접속자] {_sessions.Count}명");
@@ -113,12 +114,12 @@ namespace BattleArenaServer
         // ═══════════════════════════════════════
         // 브로드캐스트
         // ═══════════════════════════════════════
-        public void Broadcast(object packet, int exceptPlayerId = -1)
+        public async Task BroadcastAsync(object packet, int exceptPlayerId = -1)
         {
             foreach (var pair in _sessions)
             {
                 if (pair.Key == exceptPlayerId) continue;
-                pair.Value.Send(packet);
+                await pair.Value.SendAsync(packet);
             }
         }
 
@@ -143,7 +144,7 @@ namespace BattleArenaServer
 
             try
             {
-                server.Start();
+                server.StartAsync();
             }
             catch (Exception ex)
             {
@@ -151,6 +152,9 @@ namespace BattleArenaServer
                 Console.WriteLine("아무 키나 누르면 종료합니다.");
                 Console.ReadKey();
             }
+
+            while (true) ;
+
         }
     }
 }

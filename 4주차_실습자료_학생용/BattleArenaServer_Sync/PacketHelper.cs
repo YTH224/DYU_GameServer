@@ -1,6 +1,7 @@
 using System;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace BattleArenaServer
@@ -26,13 +27,13 @@ namespace BattleArenaServer
         // 보내기 (동기)
         // ═══════════════════════════════════════
 
-        public static void Send(Socket socket, object packet)
+        public static async Task SendAsync(Socket socket, object packet)
         {
             string json = JsonConvert.SerializeObject(packet);
-            Send(socket, json);
+            await SendAsync(socket, json);
         }
 
-        public static void Send(Socket socket, string json)
+        public static async Task SendAsync(Socket socket, string json)
         {
             byte[] body   = Encoding.UTF8.GetBytes(json);
             byte[] header = BitConverter.GetBytes(body.Length);
@@ -42,17 +43,17 @@ namespace BattleArenaServer
             Array.Copy(body, 0, packet, header.Length, body.Length);
 
             // ★ 동기 전송 — 다 보낼 때까지 쓰레드가 멈춤
-            socket.Send(packet);
+            await socket.SendAsync(packet, SocketFlags.None);
         }
 
         // ═══════════════════════════════════════
         // 받기 (동기)
         // ═══════════════════════════════════════
 
-        public static string? Receive(Socket socket)
+        public static async Task<string?> ReceiveAsync(Socket socket)
         {
             // 1. 길이 헤더 4바이트
-            byte[]? headerBytes = ReceiveExact(socket, 4);
+            byte[]? headerBytes = await ReceiveExact(socket, 4);
             if (headerBytes == null) return null;
 
             int bodyLength = BitConverter.ToInt32(headerBytes, 0);
@@ -64,7 +65,7 @@ namespace BattleArenaServer
             }
 
             // 2. 본문
-            byte[]? bodyBytes = ReceiveExact(socket, bodyLength);
+            byte[]? bodyBytes = await ReceiveExact(socket, bodyLength);
             if (bodyBytes == null) return null;
 
             return Encoding.UTF8.GetString(bodyBytes);
@@ -77,7 +78,7 @@ namespace BattleArenaServer
         ///   데이터가 안 오면 이 줄에서 쓰레드가 영원히 멈춥니다.
         ///   그동안 그 쓰레드는 아무 일도 못 합니다.
         /// </summary>
-        private static byte[]? ReceiveExact(Socket socket, int count)
+        private static async Task<byte[]?> ReceiveExact(Socket socket, int count)
         {
             byte[] buffer = new byte[count];
             int received = 0;
@@ -85,8 +86,8 @@ namespace BattleArenaServer
             while (received < count)
             {
                 // ★ 동기 수신 — 데이터가 올 때까지 여기서 멈춤
-                int n = socket.Receive(
-                    buffer, received, count - received, SocketFlags.None);
+                int n = await socket.ReceiveAsync(
+                    new ArraySegment<byte>(buffer, received, count - received), SocketFlags.None);
 
                 if (n == 0) return null;
                 received += n;
