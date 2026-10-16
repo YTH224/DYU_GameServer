@@ -1,0 +1,17 @@
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\bin\Debug\net8.0\BattleArenaServer.exe
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\bin\Debug\net8.0\BattleArenaServer.deps.json
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\bin\Debug\net8.0\BattleArenaServer.runtimeconfig.json
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\bin\Debug\net8.0\BattleArenaServer.dll
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\bin\Debug\net8.0\BattleArenaServer.pdb
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\BattleArenaServer.csproj.AssemblyReference.cache
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\BattleArenaServer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\BattleArenaServer.AssemblyInfoInputs.cache
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\BattleArenaServer.AssemblyInfo.cs
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\BattleArenaServer.csproj.CoreCompileInputs.cache
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\BattleAr.A57AE9E4.Up2Date
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\BattleArenaServer.dll
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\refint\BattleArenaServer.dll
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\BattleArenaServer.pdb
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\BattleArenaServer.genruntimeconfig.cache
+C:\Users\User\Downloads\5주차_실습자료_학생용\BattleArenaServer\obj\Debug\net8.0\ref\BattleArenaServer.dll

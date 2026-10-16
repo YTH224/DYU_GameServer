@@ -59,7 +59,10 @@ namespace BattleArenaServer
             //     UDP는 '연결'이라는 개념이 없기 때문입니다
             // ─────────────────────────────────────────
 
-            _socket = null!;   // ← 이 줄을 지우고 직접 만드세요
+            _socket = new Socket(AddressFamily.InterNetwork,
+                                  SocketType.Dgram, ProtocolType.Udp);
+
+            _socket.Bind(new IPEndPoint(IPAddress.Any, UDP_PORT));
 
 
 
@@ -101,9 +104,11 @@ namespace BattleArenaServer
                     //     result.RemoteEndPoint   보낸 사람 주소
                     // ─────────────────────────────────────────
 
-                    await Task.Delay(100);   // ← 이 줄을 지우고 직접 구현하세요
+                    var result = await _socket.ReceiveFromAsync(
+                     new ArraySegment<byte>(buffer), SocketFlags.None, from);
 
-
+                    string msg = Encoding.UTF8.GetString(buffer, 0, result.ReceivedBytes);
+                    HandlePacket(msg, result.RemoteEndPoint);
 
                 }
                 catch (Exception ex)
@@ -161,8 +166,7 @@ namespace BattleArenaServer
             // ─────────────────────────────────────────
 
             // ← 여기에 한 줄 추가하세요
-
-
+            if (seq <= session.LastSeq) return;
 
             // 위치 갱신 (이 부분은 완성되어 있습니다)
             session.LastSeq = seq;
@@ -214,7 +218,25 @@ namespace BattleArenaServer
                 //   참고
                 //     PositionSync 의 BroadcastLoopAsync 가 거의 같습니다
                 // ─────────────────────────────────────────
+                var sb = new StringBuilder(UdpPacket.STATE);
+                foreach (var session in sessions)
+                {
+                    if (session.UdpEndPoint == null) continue;
+                    sb.Append($"|{session.PlayerId},{session.Nickname},{session.X},{session.Y}");
+                }
 
+                string state = sb.ToString();
+                if (state == UdpPacket.STATE) continue;
+
+                byte[] data = Encoding.UTF8.GetBytes(state);
+
+                foreach (var s in sessions)
+                {
+                    if (s.UdpEndPoint == null) continue;
+               
+                    await _socket.SendToAsync(new ArraySegment<byte>(data),
+                                                  SocketFlags.None, s.UdpEndPoint);
+                }
 
 
 
