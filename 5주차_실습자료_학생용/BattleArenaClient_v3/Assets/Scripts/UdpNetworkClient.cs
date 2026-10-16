@@ -94,8 +94,10 @@ namespace BattleArena
                 //     UDP는 Connect라는 개념이 없습니다
                 // ─────────────────────────────────────────
 
-                _socket = null;            // ← 이 두 줄을 지우고
-                _serverEndPoint = null;    //    직접 만드세요
+                _socket = new Socket(AddressFamily.InterNetwork,
+                              SocketType.Dgram, ProtocolType.Udp);
+                _socket.Bind(new IPEndPoint(IPAddress.Any, 0));
+                _serverEndPoint = new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT);
 
 
 
@@ -146,10 +148,11 @@ namespace BattleArena
                 //     (서버 TODO 3과 짝입니다)
                 // ─────────────────────────────────────────
 
+                string packet = $"MOVE|{_playerId}|{_seq}|{x}|{y}";
 
+                byte[] data = Encoding.UTF8.GetBytes(packet);
 
-
-                await Task.CompletedTask;   // ← 구현했으면 이 줄은 지우세요
+                await _socket.SendToAsync(new ArraySegment<byte>(data), SocketFlags.None, _serverEndPoint);
             }
             catch
             {
@@ -222,7 +225,16 @@ namespace BattleArena
             //     return true;
             // ─────────────────────────────────────────
 
-            return false;   // ← 이 줄을 지우고 직접 구현하세요
+
+            string latest = null;
+            while (_stateQueue.TryDequeue(out string msg))
+                latest = msg;          // 계속 덮어쓰기
+
+            if (latest == null) return false;
+            if (!latest.StartsWith("STATE")) return false;
+
+            players = Parse(latest);
+            return true;
 
 
 
